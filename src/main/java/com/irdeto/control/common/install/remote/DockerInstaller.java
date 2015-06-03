@@ -25,7 +25,9 @@ public class DockerInstaller extends IrdetoProductInstaller {
 		//install docker
 		sshHelper.execSudo("sudo apt-get install -y docker");
 		//execute docker without sudo
-		
+		sshHelper.execSudo("sudo groupadd docker");
+		sshHelper.execSudo("sudo gpasswd -a " + sshHelper.user + " docker");
+		sshHelper.execSudo("sudo service docker.io restart");
 	}
 
 

@@ -19,8 +19,8 @@ public class SshHelper {
 	private static final String SUDO_PASS_PPROMPT = "[sudo] password";
 
 	private String host = "1.1.1.1";
-	public String user = "skozlov";
-	private String pwd = "Asd123!.";
+	public String user = "";
+	private String pwd = "";
 
 	private Channel channel;
 	private Session session;
