@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 
 import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -18,7 +19,7 @@ public class SshHelper {
 	
 	private static final String SUDO_PASS_PPROMPT = "[sudo] password";
 
-	private String host = "1.1.1.1";
+	private String host = "";
 	public String user = "";
 	private String pwd = "";
 
@@ -95,6 +96,7 @@ public class SshHelper {
 	}
 	
 	public String connect() throws JSchException, InterruptedException, IOException{
+		((ChannelShell)channel).setPtyType("dumb");
 		channel.connect();
 		System.out.println("-*****-SSH Shell Connection Established\n");
 		String res = getResponse();

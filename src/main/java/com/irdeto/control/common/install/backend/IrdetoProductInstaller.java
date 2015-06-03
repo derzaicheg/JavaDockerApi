@@ -44,8 +44,9 @@ public abstract class IrdetoProductInstaller {
      */
     public boolean isPackageInstalled(String packageName) throws JSchException, IOException, InterruptedException{
     	SshHelper sshHelper = new SshHelper(logger);
-    	String result = sshHelper.exec("dpkg -s " + packageName);
-    	if (!result.toLowerCase().contains("package '" + packageName + "' is not installed")){
+    	String result = sshHelper.exec("dpkg -s " + packageName + " | grep Status");
+    	System.out.println(result);
+    	if (result.toLowerCase().contains("status: install ok installed")){
     		return true;
     	}
     	return false;
