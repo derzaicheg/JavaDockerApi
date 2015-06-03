@@ -1,4 +1,4 @@
-package com.helpers;
+package com.irdeto.control.common.helpers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,18 +6,21 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 public class SshHelper {
+	protected final Logger logger;
 	
 	private static final String SUDO_PASS_PPROMPT = "[sudo] password";
 
-	private String host;
-	private String user;
-	private String pwd;
+	private String host = "1.1.1.1";
+	public String user = "skozlov";
+	private String pwd = "Asd123!.";
 
 	private Channel channel;
 	private Session session;
@@ -45,7 +48,8 @@ public class SshHelper {
 		this.prompt = prompt;
 	}
 
-	public SshHelper(String host, String user, String pwd) throws JSchException, IOException {
+	public SshHelper(final Logger logger) throws JSchException, IOException {
+		this.logger = logger;
 		this.host = host;
 		this.user = user;
 		this.pwd = pwd;
@@ -67,6 +71,27 @@ public class SshHelper {
 		ps = new PrintStream(out, true);
 		in = channel.getInputStream();
 		System.out.println("-*****-SSH Shell Ready to Connect\n");		
+	}
+	
+	private String exec(String cmd, String pwd, String prompt) throws JSchException, InterruptedException, IOException{
+		String result;
+		result = connect();
+		if(result != "" && !isFailed()){
+			result = sendCmd(cmd, pwd, prompt);
+			this.logger.info("Ssh command was executed. Command is:\n'" + cmd + "'\n and result is:\n" + result);
+			disconnect();
+		} else{
+			result = null;
+		}
+		return result;
+	}
+	
+	public String exec(String cmd) throws JSchException, InterruptedException, IOException{
+		return exec(cmd, "", "");
+	}
+	
+	public String execSudo(String cmd) throws JSchException, InterruptedException, IOException{
+		return exec(cmd, this.pwd, SUDO_PASS_PPROMPT);
 	}
 	
 	public String connect() throws JSchException, InterruptedException, IOException{
