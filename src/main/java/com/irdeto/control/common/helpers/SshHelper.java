@@ -1,25 +1,31 @@
 package com.irdeto.control.common.helpers;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 
 import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public class SshHelper {
 	protected final Logger logger;
-	
+
 	private static final String SUDO_PASS_PPROMPT = "[sudo] password";
 
-	private String host = "";
+	private String host = "192.168.56.101";
 	public String user = "";
 	private String pwd = "";
 
@@ -30,9 +36,9 @@ public class SshHelper {
 	private InputStream in;
 	private OutputStream out;
 	private PrintStream ps;
-	
+
 	private boolean FAILED;
-	
+
 	public boolean isFailed() {
 		return FAILED;
 	}
@@ -40,7 +46,7 @@ public class SshHelper {
 	public void setFailed(boolean failed) {
 		FAILED = failed;
 	}
-	
+
 	private String getPrompt() {
 		return prompt;
 	}
@@ -54,10 +60,11 @@ public class SshHelper {
 		this.host = host;
 		this.user = user;
 		this.pwd = pwd;
-		createConnection();
+
 	}
 
-	private void createConnection() throws JSchException, IOException{
+	private void createConnection(String channelDef) throws JSchException,
+			IOException {
 		JSch jsch = new JSch();
 		session = jsch.getSession(this.user, this.host, 22);
 		session.setPassword(this.pwd);
@@ -65,38 +72,45 @@ public class SshHelper {
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
 		session.connect();
-		System.out.println("-*****-SSH Session Created for Host : " + this.host + "\n");
-		channel = session.openChannel("shell");
-		
+		System.out.println("-*****-SSH Session Created for Host : " + this.host
+				+ "\n");
+		channel = session.openChannel(channelDef);
+
 		out = channel.getOutputStream();
 		ps = new PrintStream(out, true);
 		in = channel.getInputStream();
-		System.out.println("-*****-SSH Shell Ready to Connect\n");		
+		System.out.println("-*****-SSH Shell Ready to Connect\n");
 	}
-	
-	private String exec(String cmd, String pwd, String prompt) throws JSchException, InterruptedException, IOException{
+
+	private String exec(String cmd, String pwd, String prompt)
+			throws JSchException, InterruptedException, IOException {
 		String result;
 		result = connect();
-		if(result != "" && !isFailed()){
+		if (result != "" && !isFailed()) {
 			result = sendCmd(cmd, pwd, prompt);
-			this.logger.info("Ssh command was executed. Command is:\n'" + cmd + "'\n and result is:\n" + result);
+			this.logger.info("Ssh command was executed. Command is:\n'" + cmd
+					+ "'\n and result is:\n" + result);
 			disconnect();
-		} else{
+		} else {
 			result = null;
 		}
 		return result;
 	}
-	
-	public String exec(String cmd) throws JSchException, InterruptedException, IOException{
+
+	public String exec(String cmd) throws JSchException, InterruptedException,
+			IOException {
 		return exec(cmd, "", "");
 	}
-	
-	public String execSudo(String cmd) throws JSchException, InterruptedException, IOException{
+
+	public String execSudo(String cmd) throws JSchException,
+			InterruptedException, IOException {
 		return exec(cmd, this.pwd, SUDO_PASS_PPROMPT);
 	}
-	
-	public String connect() throws JSchException, InterruptedException, IOException{
-		((ChannelShell)channel).setPtyType("dumb");
+
+	public String connect() throws JSchException, InterruptedException,
+			IOException {
+		createConnection("shell");
+		((ChannelShell) channel).setPtyType("dumb");
 		channel.connect();
 		System.out.println("-*****-SSH Shell Connection Established\n");
 		String res = getResponse();
@@ -105,106 +119,142 @@ public class SshHelper {
 		setFailed(false);
 		return res;
 	}
-	
-	public String sendSudoCmd(String cmd) throws IOException, InterruptedException{
-		return sendCmd(cmd, this.pwd, SUDO_PASS_PPROMPT);		
+
+	public String sendSudoCmd(String cmd) throws IOException,
+			InterruptedException {
+		return sendCmd(cmd, this.pwd, SUDO_PASS_PPROMPT);
 	}
-	
-	public String sendCmd(String cmd) throws IOException, InterruptedException{
-		return sendCmd(cmd,"","");
+
+	public String sendCmd(String cmd) throws IOException, InterruptedException {
+		return sendCmd(cmd, "", "");
 	}
-	
-	public String sendCmd(String cmd,String passwd,String prompt) throws IOException, InterruptedException{
+
+	public String sendCmd(String cmd, String passwd, String prompt)
+			throws IOException, InterruptedException {
 		String res = "\n";
 		res = sendString(cmd);
-		if(passwd!="")
-			if(requiresPswd(res,prompt))
+		if (passwd != "")
+			if (requiresPswd(res, prompt))
 				res = sendString(passwd);
 			else
-				res = trimCmd(res,cmd);
+				res = trimCmd(res, cmd);
 		else
-			res = trimCmd(res,cmd);
-		if(ready4Next(res)){
+			res = trimCmd(res, cmd);
+		if (ready4Next(res)) {
 			setFailed(false);
 			res = trimPrompt(res);
-		}else{
+		} else {
 			setFailed(true);
 		}
 		return res.trim();
 	}
-	
-	public void disconnect() throws IOException{
+
+	public void disconnect() throws IOException {
 		ps.close();
 		out.close();
 		in.close();
 		channel.disconnect();
 		session.disconnect();
 		System.out.println("-*****-Server Disconnected\n");
-	}	
-	
-	private String sendString(String cmd) throws IOException, InterruptedException{
+	}
+
+	/**
+	 * Function to put file on remote server via sftp
+	 * 
+	 * @param localPath - local relative path to the project resources
+	 * @param remotePath - remote path to copy. Should include file name as well. 
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws SftpException
+	 * @throws URISyntaxException
+	 */
+	public void putFile(String localPath, String remotePath)
+			throws JSchException, IOException, SftpException,
+			URISyntaxException {
+		createConnection("sftp");
+		channel.connect();
+		ChannelSftp c = (ChannelSftp) channel;
+		try (final InputStream input = getClass().getClassLoader()
+				.getResourceAsStream(localPath)) {
+			c.put(input, remotePath);
+		}
+		try {
+			c.quit();
+		} catch (Exception e) {
+			logger.error("Unable to disconnect from FTPserver. " + e.toString());
+		}
+		disconnect();
+
+	}
+
+	private String sendString(String cmd) throws IOException,
+			InterruptedException {
 		String res = "\n";
-		out.write((cmd+"\n").getBytes());
+		out.write((cmd + "\n").getBytes());
 		out.flush();
 		res = getResponse();
 		return res;
 	}
-	
-	private String trimPrompt(String msg){
-		return(msg.substring(0,msg.lastIndexOf("\n")-1));
+
+	private String trimPrompt(String msg) {
+		return (msg.substring(0, msg.lastIndexOf("\n") - 1));
 	}
-	
-	private boolean requiresPswd(String msg,String prompt){
+
+	private boolean requiresPswd(String msg, String prompt) {
 		msg = getEndLine(msg);
-		if(msg.startsWith(prompt))
+		if (msg.startsWith(prompt))
 			return true;
 		return false;
 	}
-	
-	private String trimCmd(String msg,String cmd){
-		return(msg.substring(cmd.length()));
+
+	private String trimCmd(String msg, String cmd) {
+		return (msg.substring(cmd.length()));
 	}
-	
-	private boolean ready4Next(String msg){
+
+	private boolean ready4Next(String msg) {
 		return requiresPswd(msg, prompt);
 	}
-	
-	private String getEndLine(String msg){
-		String res="";
-		res = msg.substring(msg.lastIndexOf("\n")+1);
+
+	private String getEndLine(String msg) {
+		String res = "";
+		res = msg.substring(msg.lastIndexOf("\n") + 1);
 		return res;
 	}
-	
-	private String getResponse() throws InterruptedException, IOException{
+
+	private String getResponse() throws InterruptedException, IOException {
 		Thread.sleep(1000);
 		byte[] bt = new byte[1024];
 		String result = "";
-			while (in.available() > 0) {
-				String str;
-				int i = in.read(bt, 0, 1024);
-				if (i < 0)
-					break;
-				str = new String(bt, 0, i);
-				result = result + str;
-				Thread.sleep(1000);
-	}
-			if(result != ""){
-				System.out.println("-*****-Retrieved Result : " + result.substring(0, 6) + "...." + result.substring(result.length()-6) + "\n");
-			}else{
-				System.out.println("-*****-No Result to be Retrieved" + "\n");
-			}
-			return result;
+		while (in.available() > 0) {
+			String str;
+			int i = in.read(bt, 0, 1024);
+			if (i < 0)
+				break;
+			str = new String(bt, 0, i);
+			result = result + str;
+			Thread.sleep(1000);
+		}
+		if (result != "") {
+			System.out.println("-*****-Retrieved Result : "
+					+ result.substring(0, 6) + "...."
+					+ result.substring(result.length() - 6) + "\n");
+		} else {
+			System.out.println("-*****-No Result to be Retrieved" + "\n");
+		}
+		return result;
 	}
 
-//	public static void main(String[] args) throws JSchException, IOException, InterruptedException {
-//	
-//		SshHelper s = new SshHelper("192.168.0.108", "derzai", "adu7fieL");
-//		
-//		s.connect();
-//		//String cmd = s.sendCmd("pwd");
-//		String result = s.sendSudoCmd("sudo apt-get install docker");
-//		System.out.println("========" + result);
-//		s.disconnect();
-//		
+//	public static void main(String[] args) throws JSchException, IOException,
+//			InterruptedException, SftpException, URISyntaxException {
+//		Logger logger = null;
+//		SshHelper s = new SshHelper(logger);
+//		s.putFile();
+		//
+		// s.connect();
+		// //String cmd = s.sendCmd("pwd");
+		// String result = s.sendSudoCmd("sudo apt-get install docker");
+		// System.out.println("========" + result);
+		// s.disconnect();
+		//
 //	}
 }

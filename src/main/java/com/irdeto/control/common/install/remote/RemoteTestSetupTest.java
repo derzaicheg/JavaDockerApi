@@ -15,7 +15,9 @@ public class RemoteTestSetupTest {
 	@Test
 	public void installDocker() throws Exception{
 		DockerInstaller dockerInstaller = new DockerInstaller(this.logger);
-		boolean isInstalled = dockerInstaller.isPackageInstalled(dockerInstaller.getProductName());
-		System.out.println("Docker is installed: " + isInstalled);
+		boolean isInstalled = dockerInstaller.isInstalled();
+		if (!isInstalled){
+			dockerInstaller.install();
+		}
 	}
 }
