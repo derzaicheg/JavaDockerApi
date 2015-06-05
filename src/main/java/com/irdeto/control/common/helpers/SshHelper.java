@@ -25,10 +25,6 @@ public class SshHelper {
 
 	private static final String SUDO_PASS_PPROMPT = "[sudo] password";
 
-	private String host = "192.168.56.101";
-	public String user = "";
-	private String pwd = "";
-
 	private Channel channel;
 	private Session session;
 	private String prompt;
@@ -38,6 +34,10 @@ public class SshHelper {
 	private PrintStream ps;
 
 	private boolean FAILED;
+
+	private String host;
+	private String user;
+	private String pwd;
 
 	public boolean isFailed() {
 		return FAILED;
@@ -55,7 +55,7 @@ public class SshHelper {
 		this.prompt = prompt;
 	}
 
-	public SshHelper(final Logger logger) throws JSchException, IOException {
+	public SshHelper(String host, String user, String pwd, final Logger logger) throws JSchException, IOException {
 		this.logger = logger;
 		this.host = host;
 		this.user = user;

@@ -5,6 +5,9 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 
+import com.irdeto.control.common.config.JCTestProperties;
+import com.irdeto.control.common.config.TestSettings;
+import com.irdeto.control.common.config.TestSettings.PropertyNotExistsException;
 import com.irdeto.control.common.helpers.SshHelper;
 import com.jcraft.jsch.JSchException;
 
@@ -16,9 +19,16 @@ import com.jcraft.jsch.JSchException;
 public abstract class IrdetoProductInstaller {
 	
 	protected final Logger logger;
+	private String user;
+	private String host;
+	private String pwd;
 
-	public IrdetoProductInstaller(final Logger logger){
+	public IrdetoProductInstaller(final Logger logger) throws PropertyNotExistsException, IOException{
 		this.logger = logger;
+		TestSettings testSettings = new TestSettings(logger);
+		this.host = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_HOST);
+		this.user = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_USR);
+		this.pwd = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_PWD);
 	}
 	
     /**
@@ -43,7 +53,7 @@ public abstract class IrdetoProductInstaller {
      * @throws InterruptedException
      */
     public boolean isPackageInstalled(String packageName) throws JSchException, IOException, InterruptedException{
-    	SshHelper sshHelper = new SshHelper(logger);
+    	SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
     	String result = sshHelper.exec("dpkg -s " + packageName + " | grep Status");
     	if (result.toLowerCase().contains("status: install okdocker")){
     		return true;
