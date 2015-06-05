@@ -40,12 +40,14 @@ public class DockerHelper {
 	}
 	
 	public void buildFromDockerfile() throws IOException{
-		//final InputStream input = getClass().getClassLoader().getResourceAsStream("dockerfiles/centos/Dockerfile");
-		File baseDir = new File("D:\\projects\\JavaDockerApi\\src\\main\\resources\\dockerfiles\\centos\\Dockerfile");
+		final InputStream input = getClass().getClassLoader().getResourceAsStream("dockerfiles/centos/Dockerfile.tar");
+		System.out.println(input);
+		//File baseDir = new File("D:\\projects\\JavaDockerApi\\src\\main\\resources\\dockerfiles\\centos\\Dockerfile");
 		//OutputStream outputStream = new FileOutputStream(tempFile);
 		//IOUtils.copy(input, outputStream);
 //		outputStream.close();
-		InputStream response = dockerClient.buildImageCmd(baseDir).exec();
+		//InputStream response = dockerClient.buildImageCmd(baseDir).exec();
+		InputStream response = dockerClient.buildImageCmd(input).exec();
 		StringWriter logwriter = new StringWriter();
 		
 		try {
@@ -63,7 +65,7 @@ public class DockerHelper {
 	
 	
 	public static void main(String[] args) throws PropertyNotExistsException, IOException {
-		final Logger logger = (Logger) new Log4JLogger();
+		final Logger logger = LoggerFactory.getLogger(DockerHelper.class);
 		DockerHelper d = new DockerHelper(logger);
 		//Info info = d.getDockerInfo();
 		//System.out.println(info);
