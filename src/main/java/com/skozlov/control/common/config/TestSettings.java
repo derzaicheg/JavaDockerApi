@@ -1,4 +1,4 @@
-package com.irdeto.control.common.config;
+package com.skozlov.control.common.config;
 
 import java.io.IOException;
 import java.io.InputStream;

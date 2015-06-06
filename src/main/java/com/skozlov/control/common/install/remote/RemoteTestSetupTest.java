@@ -1,4 +1,4 @@
-package com.irdeto.control.common.install.remote;
+package com.skozlov.control.common.install.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

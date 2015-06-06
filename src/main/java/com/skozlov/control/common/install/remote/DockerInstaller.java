@@ -1,16 +1,16 @@
-package com.irdeto.control.common.install.remote;
+package com.skozlov.control.common.install.remote;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
 
-import com.irdeto.control.common.config.JCTestProperties;
-import com.irdeto.control.common.config.TestSettings;
-import com.irdeto.control.common.config.TestSettings.PropertyNotExistsException;
-import com.irdeto.control.common.helpers.SshHelper;
-import com.irdeto.control.common.install.backend.IrdetoProductInstaller;
 import com.jcraft.jsch.JSchException;
+import com.skozlov.control.common.config.JCTestProperties;
+import com.skozlov.control.common.config.TestSettings;
+import com.skozlov.control.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.control.common.helpers.SshHelper;
+import com.skozlov.control.common.install.backend.IrdetoProductInstaller;
 
 public class DockerInstaller extends IrdetoProductInstaller {
 

@@ -32,9 +32,7 @@ ENV JETTY_USER root
 ENV JETTY_HOST 0.0.0.0
 ENV JETTY_LOGS /opt/jetty/logs
 
-#To install from local folder 
-#ADD csm.war /opt/jetty/webapps/
-
+ADD http://tomcat.apache.org/tomcat-6.0-doc/appdev/sample/sample.war /opt/jetty/webapps/
 
 WORKDIR /opt/jetty
 EXPOSE 8080

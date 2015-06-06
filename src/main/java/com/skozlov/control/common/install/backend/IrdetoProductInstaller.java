@@ -1,15 +1,15 @@
-package com.irdeto.control.common.install.backend;
+package com.skozlov.control.common.install.backend;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
 
-import com.irdeto.control.common.config.JCTestProperties;
-import com.irdeto.control.common.config.TestSettings;
-import com.irdeto.control.common.config.TestSettings.PropertyNotExistsException;
-import com.irdeto.control.common.helpers.SshHelper;
 import com.jcraft.jsch.JSchException;
+import com.skozlov.control.common.config.JCTestProperties;
+import com.skozlov.control.common.config.TestSettings;
+import com.skozlov.control.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.control.common.helpers.SshHelper;
 
 
 /**
