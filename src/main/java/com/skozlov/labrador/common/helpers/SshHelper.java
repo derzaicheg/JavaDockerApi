@@ -1,4 +1,4 @@
-package com.skozlov.control.common.helpers;
+package com.skozlov.labrador.common.helpers;
 
 import java.io.File;
 import java.io.FileInputStream;

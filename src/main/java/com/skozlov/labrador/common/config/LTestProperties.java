@@ -1,6 +1,6 @@
-package com.skozlov.control.common.config;
+package com.skozlov.labrador.common.config;
 
-public class JCTestProperties {
+public class LTestProperties {
 	
 	/** Property holds ip for the docker server */
 	public static final String DOCKER_SERVER_HOST = "docker.server.host";

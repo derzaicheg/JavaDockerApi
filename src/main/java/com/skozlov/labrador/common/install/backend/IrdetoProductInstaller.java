@@ -1,4 +1,4 @@
-package com.skozlov.control.common.install.backend;
+package com.skozlov.labrador.common.install.backend;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,10 +6,10 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.jcraft.jsch.JSchException;
-import com.skozlov.control.common.config.JCTestProperties;
-import com.skozlov.control.common.config.TestSettings;
-import com.skozlov.control.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.control.common.helpers.SshHelper;
+import com.skozlov.labrador.common.config.LTestProperties;
+import com.skozlov.labrador.common.config.TestSettings;
+import com.skozlov.labrador.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.labrador.common.helpers.SshHelper;
 
 
 /**
@@ -26,9 +26,9 @@ public abstract class IrdetoProductInstaller {
 	public IrdetoProductInstaller(final Logger logger) throws PropertyNotExistsException, IOException{
 		this.logger = logger;
 		TestSettings testSettings = new TestSettings(logger);
-		this.host = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_HOST);
-		this.user = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_USR);
-		this.pwd = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_PWD);
+		this.host = testSettings.getProperty(LTestProperties.DOCKER_SERVER_HOST);
+		this.user = testSettings.getProperty(LTestProperties.DOCKER_SERVER_USR);
+		this.pwd = testSettings.getProperty(LTestProperties.DOCKER_SERVER_PWD);
 	}
 	
     /**

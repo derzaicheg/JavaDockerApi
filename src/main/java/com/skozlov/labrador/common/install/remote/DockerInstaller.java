@@ -1,4 +1,4 @@
-package com.skozlov.control.common.install.remote;
+package com.skozlov.labrador.common.install.remote;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,11 +6,11 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.jcraft.jsch.JSchException;
-import com.skozlov.control.common.config.JCTestProperties;
-import com.skozlov.control.common.config.TestSettings;
-import com.skozlov.control.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.control.common.helpers.SshHelper;
-import com.skozlov.control.common.install.backend.IrdetoProductInstaller;
+import com.skozlov.labrador.common.config.LTestProperties;
+import com.skozlov.labrador.common.config.TestSettings;
+import com.skozlov.labrador.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.labrador.common.helpers.SshHelper;
+import com.skozlov.labrador.common.install.backend.IrdetoProductInstaller;
 
 public class DockerInstaller extends IrdetoProductInstaller {
 
@@ -23,10 +23,10 @@ public class DockerInstaller extends IrdetoProductInstaller {
 		super(logger);
 		TestSettings testSettings = new TestSettings(logger);
 		this.host = testSettings
-				.getProperty(JCTestProperties.DOCKER_SERVER_HOST);
+				.getProperty(LTestProperties.DOCKER_SERVER_HOST);
 		this.user = testSettings
-				.getProperty(JCTestProperties.DOCKER_SERVER_USR);
-		this.pwd = testSettings.getProperty(JCTestProperties.DOCKER_SERVER_PWD);
+				.getProperty(LTestProperties.DOCKER_SERVER_USR);
+		this.pwd = testSettings.getProperty(LTestProperties.DOCKER_SERVER_PWD);
 	}
 
 	@Override

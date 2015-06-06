@@ -1,4 +1,4 @@
-package com.skozlov.control.common.helpers;
+package com.skozlov.labrador.common.helpers;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,9 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.skozlov.control.common.config.JCTestProperties;
-import com.skozlov.control.common.config.TestSettings;
-import com.skozlov.control.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.labrador.common.config.LTestProperties;
+import com.skozlov.labrador.common.config.TestSettings;
+import com.skozlov.labrador.common.config.TestSettings.PropertyNotExistsException;
 
 
 public class DockerHelper {
@@ -31,7 +31,7 @@ public class DockerHelper {
 		this.logger = logger;
 		TestSettings testSettings = new TestSettings(logger);
 		this.host = testSettings
-				.getProperty(JCTestProperties.DOCKER_SERVER_HOST);
+				.getProperty(LTestProperties.DOCKER_SERVER_HOST);
 		this.dockerClient = DockerClientBuilder.getInstance(
 				"http://" + this.host + ":2375").build();
 	}

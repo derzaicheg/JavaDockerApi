@@ -1,4 +1,4 @@
-package com.skozlov.control.common.config;
+package com.skozlov.labrador.common.config;
 
 import java.io.IOException;
 import java.io.InputStream;
