@@ -1,4 +1,4 @@
-package com.skozlov.labrador.common.install.backend;
+package com.skozlov.breed.common.install.backend;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,29 +6,29 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.jcraft.jsch.JSchException;
-import com.skozlov.labrador.common.config.LTestProperties;
-import com.skozlov.labrador.common.config.TestSettings;
-import com.skozlov.labrador.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.labrador.common.helpers.SshHelper;
+import com.skozlov.breed.common.config.TestSettings;
+import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.breed.common.helpers.SshHelper;
+import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
 
 /**
  * Abstract Irdeto data product installer. Implemented installation steps: - download artifact from the repository - cleanup
  * product folder - download required components - execute installation script
  */
-public abstract class IrdetoProductInstaller {
+public abstract class BreedProductInstaller {
 	
 	protected final Logger logger;
 	private String user;
 	private String host;
 	private String pwd;
 
-	public IrdetoProductInstaller(final Logger logger) throws PropertyNotExistsException, IOException{
+	public BreedProductInstaller(final Logger logger) throws PropertyNotExistsException, IOException{
 		this.logger = logger;
 		TestSettings testSettings = new TestSettings(logger);
-		this.host = testSettings.getProperty(LTestProperties.DOCKER_SERVER_HOST);
-		this.user = testSettings.getProperty(LTestProperties.DOCKER_SERVER_USR);
-		this.pwd = testSettings.getProperty(LTestProperties.DOCKER_SERVER_PWD);
+		this.host = testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_HOST);
+		this.user = testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_USR);
+		this.pwd = testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_PWD);
 	}
 	
     /**
@@ -43,6 +43,7 @@ public abstract class IrdetoProductInstaller {
     	// TODO Auto-generated method stub
     }
     
+    
     /**
      * Returns true or false according to the result of package installed or not. Supports ubuntu only
      * 
@@ -55,7 +56,7 @@ public abstract class IrdetoProductInstaller {
     public boolean isPackageInstalled(String packageName) throws JSchException, IOException, InterruptedException{
     	SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
     	String result = sshHelper.exec("dpkg -s " + packageName + " | grep Status");
-    	if (result.toLowerCase().contains("status: install okdocker")){
+    	if (result.toLowerCase().contains("status: install ok")){
     		return true;
     	}
     	return false;

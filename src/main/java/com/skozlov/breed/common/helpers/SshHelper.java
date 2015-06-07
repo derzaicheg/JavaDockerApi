@@ -1,4 +1,4 @@
-package com.skozlov.labrador.common.helpers;
+package com.skozlov.breed.common.helpers;
 
 import java.io.File;
 import java.io.FileInputStream;

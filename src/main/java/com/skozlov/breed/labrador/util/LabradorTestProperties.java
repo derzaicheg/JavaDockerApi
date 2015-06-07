@@ -1,6 +1,6 @@
-package com.skozlov.labrador.common.config;
+package com.skozlov.breed.labrador.util;
 
-public class LTestProperties {
+public class LabradorTestProperties {
 	
 	/** Property holds ip for the docker server */
 	public static final String DOCKER_SERVER_HOST = "docker.server.host";

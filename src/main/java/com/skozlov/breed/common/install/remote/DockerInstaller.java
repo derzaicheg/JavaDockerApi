@@ -1,4 +1,4 @@
-package com.skozlov.labrador.common.install.remote;
+package com.skozlov.breed.common.install.remote;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,13 +6,13 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.jcraft.jsch.JSchException;
-import com.skozlov.labrador.common.config.LTestProperties;
-import com.skozlov.labrador.common.config.TestSettings;
-import com.skozlov.labrador.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.labrador.common.helpers.SshHelper;
-import com.skozlov.labrador.common.install.backend.IrdetoProductInstaller;
+import com.skozlov.breed.common.config.TestSettings;
+import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.breed.common.helpers.SshHelper;
+import com.skozlov.breed.common.install.backend.BreedProductInstaller;
+import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
-public class DockerInstaller extends IrdetoProductInstaller {
+public class DockerInstaller extends BreedProductInstaller {
 
 	private String host;
 	private String user;
@@ -23,15 +23,15 @@ public class DockerInstaller extends IrdetoProductInstaller {
 		super(logger);
 		TestSettings testSettings = new TestSettings(logger);
 		this.host = testSettings
-				.getProperty(LTestProperties.DOCKER_SERVER_HOST);
+				.getProperty(LabradorTestProperties.DOCKER_SERVER_HOST);
 		this.user = testSettings
-				.getProperty(LTestProperties.DOCKER_SERVER_USR);
-		this.pwd = testSettings.getProperty(LTestProperties.DOCKER_SERVER_PWD);
+				.getProperty(LabradorTestProperties.DOCKER_SERVER_USR);
+		this.pwd = testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_PWD);
 	}
 
 	@Override
 	protected String getProductName() {
-		return "docker";
+		return "lxc-docker";
 	}
 
 	public boolean isInstalled() throws JSchException, InterruptedException,
