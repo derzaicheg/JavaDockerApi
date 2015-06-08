@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import com.github.dockerjava.api.model.Info;
 import com.jcraft.jsch.JSchException;
 import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
+import com.skozlov.breed.common.helpers.DockerHelper;
 import com.skozlov.breed.common.helpers.SshHelper;
 import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
@@ -44,5 +46,17 @@ public class RemoteTestSetupTest {
 				testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_PWD),
 				logger);
 		sshHelper.execSudo("sudo ufw disable");
+	}
+	
+	@Test(dependsOnMethods = {"disableFirewall", "installDocker"})
+	public void startDockerAgent() throws PropertyNotExistsException, IOException, JSchException, InterruptedException{
+		//start or restart docker agent
+		DockerInstaller dockerInstaller = new DockerInstaller(logger);
+		dockerInstaller.startDockerAgent();
+		//check that dockerangent works
+		DockerHelper dockerHelper = new DockerHelper(logger);
+		Info info = dockerHelper.getDockerInfo();
+		System.out.println(info.toString());
+		
 	}
 }

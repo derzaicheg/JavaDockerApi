@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jcraft.jsch.JSchException;
 import com.skozlov.breed.common.config.TestSettings;
@@ -26,7 +27,8 @@ public class DockerInstaller extends BreedProductInstaller {
 				.getProperty(LabradorTestProperties.DOCKER_SERVER_HOST);
 		this.user = testSettings
 				.getProperty(LabradorTestProperties.DOCKER_SERVER_USR);
-		this.pwd = testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_PWD);
+		this.pwd = testSettings
+				.getProperty(LabradorTestProperties.DOCKER_SERVER_PWD);
 	}
 
 	@Override
@@ -49,6 +51,27 @@ public class DockerInstaller extends BreedProductInstaller {
 		return true;
 	}
 
+	/**
+	 * Function to Start DockerAgent on remote host. If Agent is already started
+	 * - it kills all the agent instances and starts it again to ensure clean system.
+	 * 
+	 * @author skozlov
+	 * @throws JSchException
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
+	public void startDockerAgent() throws JSchException, InterruptedException,
+			IOException {
+		// kill before all the instances
+		final SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
+		sshHelper
+				.execSudo("sudo kill -9 `ps -aux | grep -i 0.0.0.0:2375 | awk {'print $2'}`");
+		sshHelper
+//				.execSudo("sudo nohup docker -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock -d >> 1.txt 2>&1 &");
+		.execSudo("sudo screen -d -m docker -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock -d");
+		
+	}
+
 	public void install() throws IOException, JSchException,
 			InterruptedException {
 		final SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
@@ -59,5 +82,13 @@ public class DockerInstaller extends BreedProductInstaller {
 		sshHelper.execSudo("sudo gpasswd -a " + user + " docker");
 		sshHelper.execSudo("sudo service docker restart");
 	}
+	
+	public static void main(String[] args) throws JSchException, InterruptedException, IOException, PropertyNotExistsException {
+		Logger logger = LoggerFactory.getLogger(DockerInstaller.class);
+		DockerInstaller d = new DockerInstaller(logger);
+		d.startDockerAgent();
+		
+	}
+
 
 }

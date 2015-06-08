@@ -1,3 +1,4 @@
 1. Check process of docker socket
-2. If not running - run, else ignor
+2. If not running - run, else ignore
+3. Make Dockerfile with postgree 8.4
 3. Install labrador product with docker
