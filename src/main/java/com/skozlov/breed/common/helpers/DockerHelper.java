@@ -11,6 +11,7 @@ import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
 import com.github.dockerjava.api.DockerClient;
@@ -237,16 +238,14 @@ public class DockerHelper {
 		return containersList;
 	}
 
-//	public static void main(String[] args) throws PropertyNotExistsException,
-//			IOException {
-//		final Logger logger = LoggerFactory.getLogger(DockerHelper.class);
-//		DockerHelper d = new DockerHelper(logger);
+	public static void main(String[] args) throws PropertyNotExistsException,
+			IOException {
+		final Logger logger = LoggerFactory.getLogger(DockerHelper.class);
+		DockerHelper d = new DockerHelper(logger);
 		// Info info = d.getDockerInfo();
 		// System.out.println(info);
-		// String res =
-		// d.buildFromDockerfile("src/main/resources/dockerfiles/centos/Dockerfile",
-		// null);
-		// System.out.println(res);
+		 String res = d.buildFromDockerfile("src/main/resources/dockerfiles/centos/Dockerfile", "postgresql");
+		 System.out.println(res);
 		// InspectImageResponse obj = d.inspectImage("77059a45608e");
 		// d.validateImage("77059a45608e");
 		// CreateContainerResponse res = d.createContainerByImageId(
@@ -259,5 +258,5 @@ public class DockerHelper {
 		// // System.out.println(inspectRes.toString());
 		// d.removeWithForceContainer("labrador");
 //		d.listContainers();
-//	}
+	}
 }
