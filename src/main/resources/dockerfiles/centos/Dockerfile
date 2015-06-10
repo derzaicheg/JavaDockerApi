@@ -8,9 +8,9 @@ RUN yum -y update; yum clean all && \
     yum -y install sudo epel-release; yum clean all && \
     yum -y install postgresql-server postgresql postgresql-contrib supervisor; yum clean all
 
-ADD ./postgresql-setup /usr/bin/postgresql-setup && \
-    ./supervisord.conf /etc/supervisord.conf && \
-    ./start_postgres.sh /start_postgres.sh
+ADD ./postgresql-setup /usr/bin/postgresql-setup
+ADD ./supervisord.conf /etc/supervisord.conf
+ADD ./start_postgres.sh /start_postgres.sh
 
 #Sudo requires a tty. fix that.
 RUN sed -i 's/.*requiretty$/#Defaults requiretty/' /etc/sudoers && \
