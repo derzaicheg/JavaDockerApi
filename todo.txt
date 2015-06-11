@@ -5,3 +5,4 @@
 5. Finish implementing install labrador method
 6. Remove labrador product
 7. Add data creation - execute sql script with shell scripting
+8. After running DockerAgent check that docker socket file is released. If not - first remove it with sudo command. 
