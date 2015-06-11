@@ -244,7 +244,7 @@ public class DockerHelper {
 		DockerHelper d = new DockerHelper(logger);
 		// Info info = d.getDockerInfo();
 		// System.out.println(info);
-		 String res = d.buildFromDockerfile("src/main/resources/dockerfiles/centos/Dockerfile", "postgresql");
+		 String res = d.buildFromDockerfile("src/main/resources/dockerfiles/labrador/centos7/Dockerfile", "postgresql");
 		 System.out.println(res);
 		// InspectImageResponse obj = d.inspectImage("77059a45608e");
 		// d.validateImage("77059a45608e");

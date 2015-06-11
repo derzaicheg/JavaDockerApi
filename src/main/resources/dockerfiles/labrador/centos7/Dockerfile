@@ -20,6 +20,7 @@ RUN sed -i 's/.*requiretty$/#Defaults requiretty/' /etc/sudoers && \
 
 RUN /usr/bin/postgresql-setup initdb
 
+
 ADD ./postgresql.conf /var/lib/pgsql/data/postgresql.conf
 RUN chown -v postgres.postgres /var/lib/pgsql/data/postgresql.conf
 RUN echo "host    all             all             0.0.0.0/0               md5" >> /var/lib/pgsql/data/pg_hba.conf
@@ -37,7 +38,6 @@ RUN wget http://download.eclipse.org/jetty/${JETTY_VERSION}/dist/jetty-distribut
     tar -zxf jetty-distribution-${JETTY_VERSION}.tar.gz  && \
     mv jetty-distribution-${JETTY_VERSION}/ /opt/jetty
 
-####################################################
 #Install Java
 RUN tar -zxf jdk-8u25-linux-x64.tar.gz && \
     mv jdk1.8.0_25/ /opt && \
@@ -58,4 +58,5 @@ ADD http://tomcat.apache.org/tomcat-6.0-doc/appdev/sample/sample.war /opt/jetty/
 
 WORKDIR /opt/jetty
 EXPOSE 8080 5432
-ENTRYPOINT ["/usr/bin/supervisord"]
+#ENTRYPOINT ["/usr/bin/supervisord"]
+CMD /usr/bin/supervisord -c /etc/supervisord.conf
