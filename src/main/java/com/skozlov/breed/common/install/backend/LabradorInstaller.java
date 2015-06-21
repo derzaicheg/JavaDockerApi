@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.breed.common.helpers.DockerHelper;
+import com.skozlov.breed.common.helpers.docker.DockerHelper;
+import com.skozlov.breed.common.helpers.docker.DockerHelperImpl;
 import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
 public class LabradorInstaller extends BreedProductInstaller {
@@ -27,7 +28,7 @@ public class LabradorInstaller extends BreedProductInstaller {
 	public LabradorInstaller(Logger logger) throws PropertyNotExistsException,
 			IOException {
 		super(logger);
-		this.dockerHelper = new DockerHelper(logger);
+		this.dockerHelper = new DockerHelperImpl(logger);
 		TestSettings testSettings = new TestSettings(logger);
 		this.dockerFilePath = testSettings.getProperty(LabradorTestProperties.DOCKER_FILE_LABRADOR_CENTOS7_PATH);
 		this.jettyContPort = testSettings.getProperty(LabradorTestProperties.DOCKER_LABRADOR_JETTY_CONTAINER_PORT);

@@ -1,4 +1,4 @@
-package com.skozlov.breed.common.helpers;
+package com.skozlov.breed.common.helpers.docker;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +29,13 @@ import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
 import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
-public class DockerHelper {
+public class DockerHelperImpl implements DockerHelper {
 
 	protected final Logger logger;
 	private DockerClient dockerClient;
 	private String host;
 
-	public DockerHelper(Logger logger) throws PropertyNotExistsException,
+	public DockerHelperImpl(Logger logger) throws PropertyNotExistsException,
 			IOException {
 		this.logger = logger;
 		TestSettings testSettings = new TestSettings(logger);
@@ -45,26 +45,19 @@ public class DockerHelper {
 				"http://" + this.host + ":2375").build();
 	}
 
-	/**
-	 * Function to test docker installation
-	 * 
-	 * @author skozlov
-	 * @return info
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#getDockerInfo()
 	 */
+	@Override
 	public Info getDockerInfo() {
 		Info info = this.dockerClient.infoCmd().exec();
 		return info;
 	}
 
-	/**
-	 * Function builds an image from Dockerfile
-	 * 
-	 * @author skozlov
-	 * @param dockerfilePath
-	 *            - path to Dockerfile folder or to the file itself
-	 * @return string docker image id
-	 * @throws IOException
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#buildFromDockerfile(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public String buildFromDockerfile(String dockerfilePath, String imageTag)
 			throws IOException {
 		if (imageTag == null) {
@@ -103,25 +96,20 @@ public class DockerHelper {
 		return imageId;
 	}
 
-	/**
-	 * Function returns InspectImageRespinse
-	 * 
-	 * @author skozlov
-	 * @param imageId
-	 * @return InspectImageResponse obj
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#inspectImage(java.lang.String)
 	 */
+	@Override
 	public InspectImageResponse inspectImage(String imageId) {
 		InspectImageResponse imageResponse = dockerClient.inspectImageCmd(
 				imageId).exec();
 		return imageResponse;
 	}
 
-	/**
-	 * Function validates InspectImage response
-	 * 
-	 * @author skozlov
-	 * @param imageId
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#validateImage(java.lang.String)
 	 */
+	@Override
 	public void validateImage(String imageId) {
 		InspectImageResponse imageResponse = inspectImage(imageId);
 		Assert.assertNotNull(imageResponse);
@@ -129,6 +117,10 @@ public class DockerHelper {
 		logger.info("Image inspect: {}", imageResponse.toString());
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#createContainerByImageId(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public CreateContainerResponse createContainerByImageId(String imageId,
 			String containerName) {
 		if (containerName == null) {
@@ -139,15 +131,10 @@ public class DockerHelper {
 		return container;
 	}
 
-	/**
-	 * Method to start up a container
-	 * 
-	 * @author skozlov
-	 * @param containerId
-	 * @param portBindingsMap
-	 *            - map of strings where key is container port and value is host
-	 *            port. If value is null - no ports binding will be made
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#startContainer(java.lang.String, java.util.Map)
 	 */
+	@Override
 	@SuppressWarnings("deprecation")
 	public void startContainer(String containerId,
 			Map<String, String> portBindingsMap) {
@@ -161,17 +148,18 @@ public class DockerHelper {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#inspectContainer(java.lang.String)
+	 */
+	@Override
 	public InspectContainerResponse inspectContainer(String containerId) {
 		return dockerClient.inspectContainerCmd(containerId).exec();
 	}
 
-	/**
-	 * Method to remove container with -f (force) flag
-	 * 
-	 * @author skozlov
-	 * @param containerId
-	 *            - can be used containerId or containerName
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#removeWithForceContainer(java.lang.String)
 	 */
+	@Override
 	public void removeWithForceContainer(String containerId) {
 		logger.info("Force removing container {}", containerId);
 		try {
@@ -183,13 +171,10 @@ public class DockerHelper {
 		}
 	}
 
-	/**
-	 * Method to stop container
-	 * 
-	 * @author skozlov
-	 * @param containerId
-	 *            - can be used containerId or containerName
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#stopContainer(java.lang.String)
 	 */
+	@Override
 	public void stopContainer(String containerId) {
 		logger.info("Stopping container {}", containerId);
 		try {
@@ -199,13 +184,10 @@ public class DockerHelper {
 		}
 	}
 
-	/**
-	 * Method to remove container
-	 * 
-	 * @author skozlov
-	 * @param containerId
-	 *            - can be used containerId or containerName
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#removeContainer(java.lang.String)
 	 */
+	@Override
 	public void removeContainer(String containerId) {
 		logger.info("Removing container {}", containerId);
 		try {
@@ -215,13 +197,10 @@ public class DockerHelper {
 		}
 	}
 
-	/**
-	 * Method to remove image with force (-f flag)
-	 * 
-	 * @author skozlov
-	 * @param containerId
-	 *            - can be used containerId or containerName
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#removeWithForceImage(java.lang.String)
 	 */
+	@Override
 	public void removeWithForceImage(String imageId) {
 		logger.info("Removing image {}", imageId);
 		try {
@@ -231,6 +210,10 @@ public class DockerHelper {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.DockerHelper#listContainers()
+	 */
+	@Override
 	public List<Container> listContainers() {
 		List<Container> containersList = dockerClient.listContainersCmd()
 				.withShowAll(true).exec();
@@ -240,8 +223,8 @@ public class DockerHelper {
 
 	public static void main(String[] args) throws PropertyNotExistsException,
 			IOException {
-		final Logger logger = LoggerFactory.getLogger(DockerHelper.class);
-		DockerHelper d = new DockerHelper(logger);
+		final Logger logger = LoggerFactory.getLogger(DockerHelperImpl.class);
+		DockerHelper d = new DockerHelperImpl(logger);
 		// Info info = d.getDockerInfo();
 		// System.out.println(info);
 		 String res = d.buildFromDockerfile("src/main/resources/dockerfiles/labrador/centos7/Dockerfile", "postgresql");

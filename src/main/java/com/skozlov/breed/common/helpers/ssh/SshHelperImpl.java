@@ -1,13 +1,10 @@
-package com.skozlov.breed.common.helpers;
+package com.skozlov.breed.common.helpers.ssh;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -20,7 +17,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-public class SshHelper {
+public class SshHelperImpl implements SshHelper {
 	protected final Logger logger;
 
 	private static final String SUDO_PASS_PPROMPT = "[sudo] password";
@@ -39,6 +36,10 @@ public class SshHelper {
 	private String user;
 	private String pwd;
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.SshHelper#isFailed()
+	 */
+	@Override
 	public boolean isFailed() {
 		return FAILED;
 	}
@@ -55,7 +56,7 @@ public class SshHelper {
 		this.prompt = prompt;
 	}
 
-	public SshHelper(String host, String user, String pwd, final Logger logger) throws JSchException, IOException {
+	public SshHelperImpl(String host, String user, String pwd, final Logger logger) throws JSchException, IOException {
 		this.logger = logger;
 		this.host = host;
 		this.user = user;
@@ -97,16 +98,28 @@ public class SshHelper {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.SshHelper#exec(java.lang.String)
+	 */
+	@Override
 	public String exec(String cmd) throws JSchException, InterruptedException,
 			IOException {
 		return exec(cmd, "", "");
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.SshHelper#execSudo(java.lang.String)
+	 */
+	@Override
 	public String execSudo(String cmd) throws JSchException,
 			InterruptedException, IOException {
 		return exec(cmd, this.pwd, SUDO_PASS_PPROMPT);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.SshHelper#connect()
+	 */
+	@Override
 	public String connect() throws JSchException, InterruptedException,
 			IOException {
 		createConnection("shell");
@@ -149,6 +162,10 @@ public class SshHelper {
 		return res.trim();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.SshHelper#disconnect()
+	 */
+	@Override
 	public void disconnect() throws IOException {
 		ps.close();
 		out.close();
@@ -158,16 +175,10 @@ public class SshHelper {
 		System.out.println("-*****-Server Disconnected\n");
 	}
 
-	/**
-	 * Function to put file on remote server via sftp
-	 * 
-	 * @param localPath - local relative path to the project resources
-	 * @param remotePath - remote path to copy. Should include file name as well. 
-	 * @throws JSchException
-	 * @throws IOException
-	 * @throws SftpException
-	 * @throws URISyntaxException
+	/* (non-Javadoc)
+	 * @see com.skozlov.breed.common.helpers.SshHelper#putFile(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void putFile(String localPath, String remotePath)
 			throws JSchException, IOException, SftpException,
 			URISyntaxException {

@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 import com.jcraft.jsch.JSchException;
 import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.breed.common.helpers.SshHelper;
+import com.skozlov.breed.common.helpers.ssh.SshHelper;
+import com.skozlov.breed.common.helpers.ssh.SshHelperImpl;
 import com.skozlov.breed.common.install.backend.BreedProductInstaller;
 import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
@@ -38,7 +39,7 @@ public class DockerInstaller extends BreedProductInstaller {
 
 	public boolean isInstalled() throws JSchException, InterruptedException,
 			IOException {
-		final SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
+		final SshHelper sshHelper = new SshHelperImpl(host, user, pwd, logger);
 		String result = sshHelper.exec("docker info");
 		if (result.toLowerCase().contains("docker: command not found")
 				|| result.toLowerCase().contains("permission denied")
@@ -63,7 +64,7 @@ public class DockerInstaller extends BreedProductInstaller {
 	public void startDockerAgent() throws JSchException, InterruptedException,
 			IOException {
 		// kill before all the instances
-		final SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
+		final SshHelper sshHelper = new SshHelperImpl(host, user, pwd, logger);
 		sshHelper
 				.execSudo("sudo kill -9 `ps -aux | grep -i 0.0.0.0:2375 | awk {'print $2'}`");
 		sshHelper
@@ -74,7 +75,7 @@ public class DockerInstaller extends BreedProductInstaller {
 
 	public void install() throws IOException, JSchException,
 			InterruptedException {
-		final SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
+		final SshHelper sshHelper = new SshHelperImpl(host, user, pwd, logger);
 		// install docker
 		sshHelper.execSudo("sudo wget -qO- https://get.docker.com/ | sh");
 		// execute docker without sudo

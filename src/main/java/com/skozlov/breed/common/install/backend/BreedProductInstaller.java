@@ -8,7 +8,8 @@ import org.slf4j.Logger;
 import com.jcraft.jsch.JSchException;
 import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.breed.common.helpers.SshHelper;
+import com.skozlov.breed.common.helpers.ssh.SshHelper;
+import com.skozlov.breed.common.helpers.ssh.SshHelperImpl;
 import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
 
@@ -54,7 +55,7 @@ public abstract class BreedProductInstaller {
      * @throws InterruptedException
      */
     public boolean isPackageInstalled(String packageName) throws JSchException, IOException, InterruptedException{
-    	SshHelper sshHelper = new SshHelper(host, user, pwd, logger);
+    	SshHelper sshHelper = new SshHelperImpl(host, user, pwd, logger);
     	String result = sshHelper.exec("dpkg -s " + packageName + " | grep Status");
     	if (result.toLowerCase().contains("status: install ok")){
     		return true;

@@ -10,8 +10,10 @@ import com.github.dockerjava.api.model.Info;
 import com.jcraft.jsch.JSchException;
 import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
-import com.skozlov.breed.common.helpers.DockerHelper;
-import com.skozlov.breed.common.helpers.SshHelper;
+import com.skozlov.breed.common.helpers.docker.DockerHelper;
+import com.skozlov.breed.common.helpers.docker.DockerHelperImpl;
+import com.skozlov.breed.common.helpers.ssh.SshHelper;
+import com.skozlov.breed.common.helpers.ssh.SshHelperImpl;
 import com.skozlov.breed.labrador.util.LabradorTestProperties;
 
 /**
@@ -40,7 +42,7 @@ public class RemoteTestSetupTest {
 	@Test
 	public void disableFirewall() throws JSchException, IOException, PropertyNotExistsException, InterruptedException {
 		TestSettings testSettings = new TestSettings(logger);
-		SshHelper sshHelper = new SshHelper(
+		SshHelper sshHelper = new SshHelperImpl(
 				testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_HOST),
 				testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_USR),
 				testSettings.getProperty(LabradorTestProperties.DOCKER_SERVER_PWD),
@@ -54,7 +56,7 @@ public class RemoteTestSetupTest {
 		DockerInstaller dockerInstaller = new DockerInstaller(logger);
 		dockerInstaller.startDockerAgent();
 		//check that dockerangent works
-		DockerHelper dockerHelper = new DockerHelper(logger);
+		DockerHelper dockerHelper = new DockerHelperImpl(logger);
 		Info info = dockerHelper.getDockerInfo();
 		System.out.println(info.toString());
 		
