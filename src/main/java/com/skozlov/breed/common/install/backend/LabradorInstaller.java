@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.skozlov.breed.common.config.TestSettings;
 import com.skozlov.breed.common.config.TestSettings.PropertyNotExistsException;
 import com.skozlov.breed.common.helpers.docker.DockerHelper;
@@ -45,6 +46,7 @@ public class LabradorInstaller extends BreedProductInstaller {
 
 	
 	public void install() throws IOException{
+		this.logger.info("Installing or deploying docker container with \'" + getProductName() + "\' product");
 		String imageResult = this.dockerHelper.buildFromDockerfile(this.dockerFilePath, getProductName() + "_image");
 		this.dockerHelper.validateImage(imageResult);
 		
@@ -53,7 +55,17 @@ public class LabradorInstaller extends BreedProductInstaller {
 		ports.put(this.jettyContPort, this.jettyHostPort);
 		ports.put(this.postgresContPort, this.postgresHostPort);
 		this.dockerHelper.startContainer(getProductName(), ports);
-		
-		
 	}
+	
+	public void uninstall() {
+		this.logger.info("Uninstalling or removing docker container with \'" + getProductName() + "\' product");
+		this.dockerHelper.removeWithForceContainer(getProductName());
+	}
+	
+	public void validateInstall() {
+		this.logger.info("Validating installation of \'" + getProductName() + "]' product");
+		InspectContainerResponse containerInfo = this.dockerHelper.inspectContainer(getProductName());
+		System.out.println(containerInfo.toString());
+	}
+	
 }

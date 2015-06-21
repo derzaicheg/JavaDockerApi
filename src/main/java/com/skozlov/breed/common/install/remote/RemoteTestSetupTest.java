@@ -39,6 +39,14 @@ public class RemoteTestSetupTest {
 		}
 	}
 
+	/**
+	 * Test to disable fw on docker host
+	 * 
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws PropertyNotExistsException
+	 * @throws InterruptedException
+	 */
 	@Test
 	public void disableFirewall() throws JSchException, IOException, PropertyNotExistsException, InterruptedException {
 		TestSettings testSettings = new TestSettings(logger);
@@ -50,6 +58,15 @@ public class RemoteTestSetupTest {
 		sshHelper.execSudo("sudo ufw disable");
 	}
 	
+	/**
+	 * Test to start docker agent on docker host. 
+	 * Sometimes dockeragent fails to start due to locked docker.sock file. Need to be fixed
+	 * 
+	 * @throws PropertyNotExistsException
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws InterruptedException
+	 */
 	@Test(dependsOnMethods = {"disableFirewall", "installDocker"})
 	public void startDockerAgent() throws PropertyNotExistsException, IOException, JSchException, InterruptedException{
 		//start or restart docker agent
@@ -58,7 +75,7 @@ public class RemoteTestSetupTest {
 		//check that dockerangent works
 		DockerHelper dockerHelper = new DockerHelperImpl(logger);
 		Info info = dockerHelper.getDockerInfo();
-		System.out.println(info.toString());
+		this.logger.info("Check Docker Agent - query for DockerInfo: " + info.toString());
 		
 	}
 }

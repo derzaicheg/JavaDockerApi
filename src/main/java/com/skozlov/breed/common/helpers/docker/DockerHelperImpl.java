@@ -166,7 +166,7 @@ public class DockerHelperImpl implements DockerHelper {
 			dockerClient.removeContainerCmd(containerId).withForce() // stop too
 					.exec();
 		} catch (NotFoundException | InternalServerErrorException ignored) {
-			logger.info("ignoring to remove with force {}",
+			logger.info("Container not found or ignoring to remove with force {}",
 					ignored.getMessage());
 		}
 	}
@@ -180,7 +180,7 @@ public class DockerHelperImpl implements DockerHelper {
 		try {
 			dockerClient.stopContainerCmd(containerId).exec();
 		} catch (NotFoundException | InternalServerErrorException ignored) {
-			logger.info("ignoring to stop {}", ignored.getMessage());
+			logger.info("Container not found or ignoring to stop {}", ignored.getMessage());
 		}
 	}
 
