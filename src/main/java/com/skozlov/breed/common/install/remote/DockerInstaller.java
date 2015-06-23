@@ -1,6 +1,5 @@
 package com.skozlov.breed.common.install.remote;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;

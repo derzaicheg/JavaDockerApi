@@ -36,7 +36,9 @@ public class SshHelperImpl implements SshHelper {
 	private String user;
 	private String pwd;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.skozlov.breed.common.helpers.SshHelper#isFailed()
 	 */
 	@Override
@@ -56,7 +58,8 @@ public class SshHelperImpl implements SshHelper {
 		this.prompt = prompt;
 	}
 
-	public SshHelperImpl(String host, String user, String pwd, final Logger logger) throws JSchException, IOException {
+	public SshHelperImpl(String host, String user, String pwd,
+			final Logger logger) throws JSchException, IOException {
 		this.logger = logger;
 		this.host = host;
 		this.user = user;
@@ -73,14 +76,14 @@ public class SshHelperImpl implements SshHelper {
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
 		session.connect();
-		System.out.println("-*****-SSH Session Created for Host : " + this.host
-				+ "\n");
+		this.logger.info("*** SSH Session Created for Host : " + this.host
+				+ "***\n");
 		channel = session.openChannel(channelDef);
 
 		out = channel.getOutputStream();
 		ps = new PrintStream(out, true);
 		in = channel.getInputStream();
-		System.out.println("-*****-SSH Shell Ready to Connect\n");
+		this.logger.info("*** SSH Shell Ready to Connect ***\n");
 	}
 
 	private String exec(String cmd, String pwd, String prompt)
@@ -89,7 +92,7 @@ public class SshHelperImpl implements SshHelper {
 		result = connect();
 		if (result != "" && !isFailed()) {
 			result = sendCmd(cmd, pwd, prompt);
-			this.logger.info("Ssh command was executed. Command is:\n'" + cmd
+			this.logger.info("*** Ssh command was executed. Command is:\n'" + cmd
 					+ "'\n and result is:\n" + result);
 			disconnect();
 		} else {
@@ -98,7 +101,9 @@ public class SshHelperImpl implements SshHelper {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.skozlov.breed.common.helpers.SshHelper#exec(java.lang.String)
 	 */
 	@Override
@@ -107,8 +112,11 @@ public class SshHelperImpl implements SshHelper {
 		return exec(cmd, "", "");
 	}
 
-	/* (non-Javadoc)
-	 * @see com.skozlov.breed.common.helpers.SshHelper#execSudo(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.skozlov.breed.common.helpers.SshHelper#execSudo(java.lang.String)
 	 */
 	@Override
 	public String execSudo(String cmd) throws JSchException,
@@ -116,7 +124,9 @@ public class SshHelperImpl implements SshHelper {
 		return exec(cmd, this.pwd, SUDO_PASS_PPROMPT);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.skozlov.breed.common.helpers.SshHelper#connect()
 	 */
 	@Override
@@ -125,10 +135,10 @@ public class SshHelperImpl implements SshHelper {
 		createConnection("shell");
 		((ChannelShell) channel).setPtyType("dumb");
 		channel.connect();
-		System.out.println("-*****-SSH Shell Connection Established\n");
+		this.logger.info("*** SSH Shell Connection Established ***\n");
 		String res = getResponse();
 		setPrompt(getEndLine(res));
-		System.out.println("-*****-Promt : " + getPrompt());
+		this.logger.info("*** Promt : " + getPrompt() + "***\n");
 		setFailed(false);
 		return res;
 	}
@@ -162,7 +172,9 @@ public class SshHelperImpl implements SshHelper {
 		return res.trim();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.skozlov.breed.common.helpers.SshHelper#disconnect()
 	 */
 	@Override
@@ -172,11 +184,14 @@ public class SshHelperImpl implements SshHelper {
 		in.close();
 		channel.disconnect();
 		session.disconnect();
-		System.out.println("-*****-Server Disconnected\n");
+		this.logger.info("*** Server Disconnected ***\n");
 	}
 
-	/* (non-Javadoc)
-	 * @see com.skozlov.breed.common.helpers.SshHelper#putFile(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.skozlov.breed.common.helpers.SshHelper#putFile(java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
 	public void putFile(String localPath, String remotePath)
@@ -246,26 +261,26 @@ public class SshHelperImpl implements SshHelper {
 			Thread.sleep(1000);
 		}
 		if (result != "") {
-			System.out.println("-*****-Retrieved Result : "
+			this.logger.info("*** Retrieved Result : "
 					+ result.substring(0, 6) + "...."
 					+ result.substring(result.length() - 6) + "\n");
 		} else {
-			System.out.println("-*****-No Result to be Retrieved" + "\n");
+			this.logger.info("*** No Result to be Retrieved" + "***\n");
 		}
 		return result;
 	}
 
-//	public static void main(String[] args) throws JSchException, IOException,
-//			InterruptedException, SftpException, URISyntaxException {
-//		Logger logger = null;
-//		SshHelper s = new SshHelper(logger);
-//		s.putFile();
-		//
-		// s.connect();
-		// //String cmd = s.sendCmd("pwd");
-		// String result = s.sendSudoCmd("sudo apt-get install docker");
-		// System.out.println("========" + result);
-		// s.disconnect();
-		//
-//	}
+	// public static void main(String[] args) throws JSchException, IOException,
+	// InterruptedException, SftpException, URISyntaxException {
+	// Logger logger = null;
+	// SshHelper s = new SshHelper(logger);
+	// s.putFile();
+	//
+	// s.connect();
+	// //String cmd = s.sendCmd("pwd");
+	// String result = s.sendSudoCmd("sudo apt-get install docker");
+	// System.out.println("========" + result);
+	// s.disconnect();
+	//
+	// }
 }
